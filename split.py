@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """One-line description of the program goes here."""
 
-
 import argparse
 import random
 from typing import Iterator, List
-
 
 def read_tags(path: str) -> Iterator[List[List[str]]]:
 	with open(path, "r") as source:
@@ -17,6 +15,7 @@ def read_tags(path: str) -> Iterator[List[List[str]]]:
 			else:  # Line is blank.
 				yield lines.copy()
 				lines.clear()
+
 	# Just in case someone forgets to put a blank line at the end...
 	if lines:
 		yield lines
@@ -25,6 +24,11 @@ def generateRand(max: int):
 	num = random.randint(1, max)
 	assert(num > 0 and num < max + 1)
 	return num
+
+def shuffleSets(dev: list, train: list, test: list):
+	random.shuffle(dev)
+	random.shuffle(train)
+	random.shuffle(test)
 
 def generateSets(inputPath: str):
 	dev = []
@@ -42,6 +46,8 @@ def generateSets(inputPath: str):
 		else:
 			train.append(tag)
 
+	shuffleSets(dev, train, test)
+
 	return dev, train, test
 
 def writeFile(path: str, tags: list):
@@ -50,20 +56,10 @@ def writeFile(path: str, tags: list):
 			for word in sentence:
 				_file.write(' '.join(word) + "\n")
 
-def writeTrain(devPath: str):
-	pass
-
-def writeTest(devPath: str):
-	pass
-
-
 def main(args: argparse.Namespace) -> None:
 	#corpus = list(read_tags("conll2000.txt"))
 	dev, train, test = generateSets(args.input)
 	#print(len(dev), len(train), len(test))
-
-
-
 	writeFile(args.dev, dev)
 	writeFile(args.train, train)
 	writeFile(args.test, test)
