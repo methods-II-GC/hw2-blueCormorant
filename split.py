@@ -56,10 +56,15 @@ def writeFile(path: str, tags: list):
 			for word in sentence:
 				_file.write(' '.join(word) + "\n")
 
+
+
+def seedRandomGenerator(seed: int):
+	random.seed(seed)
+
+
 def main(args: argparse.Namespace) -> None:
-	#corpus = list(read_tags("conll2000.txt"))
+	seedRandomGenerator(args.seed)
 	dev, train, test = generateSets(args.input)
-	#print(len(dev), len(train), len(test))
 	writeFile(args.dev, dev)
 	writeFile(args.train, train)
 	writeFile(args.test, test)
@@ -69,6 +74,7 @@ if __name__ == "__main__":
 	# TODO: parse arguments and pass them to `main`.
 	# main()
 	parser = argparse.ArgumentParser(description='Split Data for Statistical Training')
+	parser.add_argument('-s', '--seed', type=int, help='Seed value', required=True)
 	parser.add_argument('input', type=str, help='Input file path')
 	parser.add_argument('train', type=str, help='Training file path')
 	parser.add_argument('dev', type=str, help='Development file path')
