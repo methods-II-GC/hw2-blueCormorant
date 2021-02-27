@@ -3,7 +3,11 @@
 
 import argparse
 import random
+import logging as log
 from typing import Iterator, List
+
+
+
 
 def read_tags(path: str) -> Iterator[List[List[str]]]:
 	with open(path, "r") as source:
@@ -71,26 +75,29 @@ def genTabs(count: int):
 
 
 def writePretty(dev: list, train: list, test: list):
-	print("----------Sentences-----Words----")
+	log.info("----------Sentences-----Words----")
 	sCount, wCount = writeFile(args.dev, dev)
-	print(f"| Dev   | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	log.info(f"| Dev   | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
 	sCount, wCount = writeFile(args.train, train)
-	print(f"| Train | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	log.info(f"| Train | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
 	sCount, wCount = writeFile(args.test, test)
-	print(f"| Test  | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
-	print("---------------------------------")
+	log.info(f"| Test  | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	log.info("---------------------------------")
 
 def main(args: argparse.Namespace) -> None:
 	seedRandomGenerator(args.seed)
 	dev, train, test = generateSets(args.input)
-	if args.log:
+	if args.verbose:
 		writePretty(dev, train, test)
 	
 
 if __name__ == "__main__":
+	
+	log.basicConfig(filename='stats.log', level=log.INFO,
+						format='%(levelname)s:%(message)s')	
 	parser = argparse.ArgumentParser(description='Split Data for Statistical Training')
 	parser.add_argument('-s', '--seed', type=int, help='Seed value', required=True)
-	parser.add_argument('-l', '--log', help='Log statistics', action='store_true')
+	parser.add_argument('-v', '--verbose', help='Log statistics', action='store_true')
 	parser.add_argument('input', type=str, help='Input file path')
 	parser.add_argument('train', type=str, help='Training file path')
 	parser.add_argument('dev', type=str, help='Development file path')
