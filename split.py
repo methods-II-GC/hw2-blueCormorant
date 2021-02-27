@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-line description of the program goes here."""
+"""Split tag file into development, training, and testing sets"""
 
 import argparse
 import random
@@ -37,8 +37,8 @@ def generateSets(inputPath: str):
 
 	tags = read_tags(inputPath)
 	for tag in tags:
+		# Allocate tags to output files
 		num = generateRand(10)
-
 		if num == 1:
 			dev.append(tag)
 		elif num == 2:
@@ -51,30 +51,46 @@ def generateSets(inputPath: str):
 	return dev, train, test
 
 def writeFile(path: str, tags: list):
+	sentenceCount = 0
+	wordCount = 0
 	with open(path, "w") as _file:
 		for sentence in tags:
+			sentenceCount = sentenceCount + 1
 			for word in sentence:
+				wordCount = wordCount + 1
 				_file.write(' '.join(word) + "\n")
 
-
+	return sentenceCount, wordCount
 
 def seedRandomGenerator(seed: int):
 	random.seed(seed)
 
+def genTabs(count: int):
+	width = 10 # Cell width
+	return ''.join([' ' for elem in range(width-len(str(count)))])
+
+
+def writePretty(dev: list, train: list, test: list):
+	print("----------Sentences-----Words----")
+	sCount, wCount = writeFile(args.dev, dev)
+	print(f"| Dev   | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	sCount, wCount = writeFile(args.train, train)
+	print(f"| Train | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	sCount, wCount = writeFile(args.test, test)
+	print(f"| Test  | {sCount}{genTabs(sCount)}| {wCount}{genTabs(wCount)}|")
+	print("---------------------------------")
 
 def main(args: argparse.Namespace) -> None:
 	seedRandomGenerator(args.seed)
 	dev, train, test = generateSets(args.input)
-	writeFile(args.dev, dev)
-	writeFile(args.train, train)
-	writeFile(args.test, test)
+	if args.log:
+		writePretty(dev, train, test)
+	
 
 if __name__ == "__main__":
-	# TODO: declare arguments.
-	# TODO: parse arguments and pass them to `main`.
-	# main()
 	parser = argparse.ArgumentParser(description='Split Data for Statistical Training')
 	parser.add_argument('-s', '--seed', type=int, help='Seed value', required=True)
+	parser.add_argument('-l', '--log', help='Log statistics', action='store_true')
 	parser.add_argument('input', type=str, help='Input file path')
 	parser.add_argument('train', type=str, help='Training file path')
 	parser.add_argument('dev', type=str, help='Development file path')
