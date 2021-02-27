@@ -4,7 +4,7 @@
 import argparse
 import random
 import logging as log
-from typing import Iterator, List
+from typing import Iterator, List, Tuple
 
 
 def read_tags(path: str) -> Iterator[List[List[str]]]:
@@ -23,19 +23,19 @@ def read_tags(path: str) -> Iterator[List[List[str]]]:
         yield lines
 
 
-def generateRand(max: int):
+def generateRand(max: int) -> int:
     num = random.randint(1, max)
     assert num > 0 and num < max + 1
     return num
 
 
-def shuffleSets(dev: list, train: list, test: list):
+def shuffleSets(dev: list, train: list, test: list) -> None:
     random.shuffle(dev)
     random.shuffle(train)
     random.shuffle(test)
 
 
-def generateSets(inputPath: str):
+def generateSets(inputPath: str) -> Tuple[List, List, List]:
     dev = []
     train = []
     test = []
@@ -56,7 +56,7 @@ def generateSets(inputPath: str):
     return dev, train, test
 
 
-def writeFile(path: str, tags: list):
+def writeFile(path: str, tags: list) -> Tuple[int, int]:
     sentenceCount = 0
     wordCount = 0
     with open(path, "w") as _file:
@@ -69,16 +69,16 @@ def writeFile(path: str, tags: list):
     return sentenceCount, wordCount
 
 
-def seedRandomGenerator(seed: int):
+def seedRandomGenerator(seed: int) -> None:
     random.seed(seed)
 
 
-def genTabs(count: int):
+def genTabs(count: int) -> str:
     width = 10  # Cell width
     return "".join([" " for elem in range(width - len(str(count)))])
 
 
-def writePretty(dev: list, train: list, test: list):
+def writePretty(dev: list, train: list, test: list) -> None:
     log.info("----------Sentences-----Words----")
     sCount, wCount = writeFile(args.dev, dev)
     log.info(
